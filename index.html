@@ -145,56 +145,129 @@
   .info-sep{width:1px;height:15px;background:rgba(255,255,255,.16);flex:0 0 auto;}
   @media (max-width:640px){.infobar-in{gap:14px;height:36px;}.info-item{font-size:.72rem;}}
 
-  /* ---------- Botón flotante de WhatsApp ---------- */
-  .wa-float{
-    position:fixed;right:22px;bottom:22px;z-index:45;
-    display:flex;align-items:center;gap:10px;
-    background:#25D366;color:#fff;text-decoration:none;
-    padding:14px 20px 14px 16px;border-radius:999px;
-    box-shadow:0 10px 28px -8px rgba(20,120,60,.55), 0 2px 8px rgba(0,0,0,.18);
-    font-weight:700;font-size:.92rem;letter-spacing:.01em;
-    transition:transform .18s ease, box-shadow .18s ease;
-    animation:waRise .7s .6s ease both;
+  /* ---------- Selección múltiple ---------- */
+  .toolbar{position:relative;}
+  .multi-toggle{
+    display:inline-flex;align-items:center;gap:9px;white-space:nowrap;cursor:pointer;
+    font-family:var(--font);font-weight:700;font-size:.86rem;color:var(--nav);
+    background:#fff;border:1.5px solid var(--bd2);padding:10px 16px;border-radius:999px;
+    transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease;
   }
-  .wa-float:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(20,120,60,.65), 0 2px 8px rgba(0,0,0,.2);}
-  .wa-float svg{width:26px;height:26px;flex:0 0 auto;}
-  .wa-float span{white-space:nowrap;}
-  @keyframes waRise{from{opacity:0;transform:translateY(16px) scale(.9);}to{opacity:1;transform:translateY(0) scale(1);}}
-  @media (max-width:640px){
-    .wa-float{right:14px;bottom:14px;padding:14px;border-radius:50%;}
-    .wa-float span{display:none;}
-  }
+  .multi-toggle svg{width:16px;height:16px;flex:0 0 auto;}
+  .multi-toggle:hover{border-color:var(--nav3);transform:translateY(-1px);}
+  .multi-toggle[aria-pressed="true"]{background:var(--nav);color:#fff;border-color:var(--nav);}
+  @media (max-width:780px){.multi-toggle{width:100%;justify-content:center;}}
 
-  /* ---------- Botón flotante del Asistente virtual ---------- */
-  .chat-float{
-    position:fixed;right:22px;bottom:106px;z-index:46;
-    display:flex;align-items:center;gap:10px;
-    background:linear-gradient(120deg,var(--nav3),var(--nav));color:#fff;border:none;
-    padding:14px 20px 14px 16px;border-radius:999px;cursor:pointer;
-    box-shadow:0 10px 28px -8px rgba(0,43,78,.55),0 2px 8px rgba(0,0,0,.18);
-    font-weight:700;font-size:.92rem;letter-spacing:.01em;font-family:var(--font);
-    transition:transform .18s ease,box-shadow .18s ease;
-    animation:waRise .7s .75s ease both;
+  .multi-hint{display:none;}
+  .sel-banner{
+    display:none;align-items:center;gap:14px;margin:0 0 18px;padding:16px 18px;
+    background:linear-gradient(120deg,#fff8e1,#fdf3d0);border:1.5px solid #e8c766;border-radius:14px;
+    box-shadow:0 8px 22px -14px rgba(180,140,0,.35);
   }
-  .chat-float:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(0,43,78,.65),0 2px 8px rgba(0,0,0,.2);}
-  .chat-float svg{width:22px;height:22px;flex:0 0 auto;}
-  .chat-float span{white-space:nowrap;}
-  .chat-float .dot{position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--y1);border:2px solid #fff;}
+  body.selecting .sel-banner{display:flex;}
+  .sel-banner-ico{
+    flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:#f0b429;color:#5a3d00;
+    display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);
+  }
+  .sel-banner-ico svg{width:22px;height:22px;}
+  .sel-banner-txt{flex:1 1 auto;min-width:200px;}
+  .sel-banner-txt strong{display:block;font-size:1.02rem;color:#5a3d00;margin-bottom:3px;}
+  .sel-banner-txt span{display:block;font-size:.86rem;color:#6b5006;line-height:1.5;}
+  .sel-banner-count{
+    flex:0 0 auto;background:#5a3d00;color:#fff;font-weight:800;font-size:.86rem;
+    padding:8px 16px;border-radius:999px;white-space:nowrap;
+  }
+  @media (max-width:640px){.sel-banner{flex-wrap:wrap;}.sel-banner-count{width:100%;text-align:center;}}
+
+  body.selecting .card{position:relative;}
+  .card-check{
+    position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:7px;
+    border:2px solid var(--bd2);background:#fff;display:none;align-items:center;justify-content:center;
+    z-index:2;transition:background .15s ease,border-color .15s ease;
+  }
+  body.selecting .card-check{display:flex;}
+  .card-check svg{width:15px;height:15px;color:#fff;opacity:0;transition:opacity .12s ease;}
+  .card.picked{box-shadow:0 0 0 2.5px var(--y1),var(--shadow-md);}
+  .card.picked .card-check{background:var(--y1);border-color:var(--y1);}
+  .card.picked .card-check svg{opacity:1;}
+
+  .sel-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:44;background:var(--nav);color:#fff;
+    box-shadow:0 -8px 26px -12px rgba(0,20,40,.5);
+    transform:translateY(110%);transition:transform .25s ease;
+  }
+  .sel-bar.show{transform:translateY(0);}
+  .sel-bar-in{
+    max-width:var(--maxw);margin:0 auto;padding:14px 22px;display:flex;align-items:center;
+    justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .sel-bar-count{font-size:.92rem;color:#cfe2f2;}
+  .sel-bar-count b{color:#fff;font-size:1.05rem;}
+  .sel-bar-actions{display:flex;align-items:center;gap:10px;position:relative;}
+  .sel-arrow{
+    display:none;position:absolute;right:0;bottom:100%;margin-bottom:6px;flex-direction:column;
+    align-items:center;pointer-events:none;
+  }
+  .sel-bar.armed .sel-arrow{display:flex;}
+  .sel-arrow span{
+    background:#fff;color:var(--nav);font-weight:800;font-size:.82rem;padding:7px 14px;border-radius:999px;
+    white-space:nowrap;box-shadow:0 6px 18px -6px rgba(0,0,0,.35);margin-bottom:2px;
+  }
+  .sel-arrow svg{width:26px;height:26px;color:#fff;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:arrowBounce 1s ease-in-out infinite;}
+  @keyframes arrowBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+  .sel-bar-clear{
+    background:none;border:1px solid rgba(255,255,255,.35);color:#fff;font-family:var(--font);
+    font-weight:600;font-size:.86rem;padding:10px 16px;border-radius:999px;cursor:pointer;
+  }
+  .sel-bar-clear:hover{background:rgba(255,255,255,.1);}
+  .sel-bar-go{
+    background:linear-gradient(120deg,var(--y1),var(--y1h));color:#fff;border:0;font-family:var(--font);
+    font-weight:700;font-size:.92rem;padding:11px 20px;border-radius:999px;cursor:pointer;
+    box-shadow:0 10px 24px -10px rgba(87,166,57,.6);transition:transform .15s ease,opacity .15s ease;
+  }
+  .sel-bar-go:hover{transform:translateY(-1px);}
+  .sel-bar-go:disabled{opacity:.5;cursor:default;transform:none;}
+
+  .m-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px;}
+  .m-chip{
+    display:inline-flex;align-items:center;gap:7px;background:var(--tint);border:1px solid var(--bd);
+    color:var(--ink);font-size:.82rem;font-weight:600;padding:7px 8px 7px 12px;border-radius:999px;
+  }
+  .m-chip button{
+    display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;
+    border:0;background:rgba(0,0,0,.08);color:var(--ink);cursor:pointer;font-size:.8rem;line-height:1;padding:0;
+  }
+  .m-chip button:hover{background:rgba(0,0,0,.16);}
+
+  /* ---------- Botones de WhatsApp y Asistente en el header ---------- */
+  .hdr-icon-btn{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:50%;flex:0 0 auto;cursor:pointer;border:none;
+    text-decoration:none;transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .hdr-icon-btn:hover{transform:translateY(-1px);}
+  .hdr-icon-btn svg{width:20px;height:20px;flex:0 0 auto;}
+  .hdr-wa{background:#25D366;color:#fff;box-shadow:0 6px 16px -6px rgba(20,120,60,.6);}
+  .hdr-wa svg{width:22px;height:22px;}
+  .hdr-chat{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
+  .hdr-chat:hover{background:rgba(255,255,255,.22);}
+  .hdr-chat .dot{position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:var(--y1);border:2px solid var(--nav);}
   @media (max-width:640px){
-    .chat-float{right:14px;bottom:82px;padding:14px;border-radius:50%;}
-    .chat-float span{display:none;}
+    .hdr-icon-btn{width:36px;height:36px;}
+    .hdr-icon-btn svg{width:18px;height:18px;}
+    .hdr-wa svg{width:20px;height:20px;}
   }
 
   .chat-panel{
-    position:fixed;right:22px;bottom:170px;z-index:47;width:360px;max-width:calc(100vw - 28px);
-    height:min(520px,calc(100vh - 200px));background:var(--card);border-radius:18px;
+    position:fixed;right:22px;top:118px;z-index:47;width:360px;max-width:calc(100vw - 28px);
+    height:min(520px,calc(100vh - 160px));background:var(--card);border-radius:18px;
     box-shadow:var(--shadow-lg);border:1px solid var(--bd);
     display:flex;flex-direction:column;overflow:hidden;
-    opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;
+    opacity:0;transform:translateY(-10px) scale(.97);pointer-events:none;
     transition:opacity .18s ease,transform .18s ease;
   }
   .chat-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
-  @media (max-width:640px){.chat-panel{right:10px;bottom:134px;width:calc(100vw - 20px);}}
+  @media (max-width:640px){.chat-panel{right:10px;left:10px;top:112px;width:auto;height:min(70vh,520px);}}
 
   .chat-head{background:linear-gradient(120deg,var(--nav3),var(--nav));color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px;flex:0 0 auto;}
   .chat-head-ico{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:0 0 auto;}
@@ -578,6 +651,13 @@
           <span class="brand-txt"><strong>FONDONORMA</strong><small>Comercialización</small></span>
         </a>
         <a class="top-cta" href="#contacto">Contáctenos</a>
+        <a class="hdr-icon-btn hdr-wa" id="waFloat" href="https://wa.me/584169113621?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20las%20certificaciones%20FONDONORMA" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+          <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.703 4.61 1.914 6.475L4 29l7.727-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818c-1.94 0-3.75-.55-5.29-1.503l-.379-.226-4.585 1.108 1.128-4.47-.248-.393A9.77 9.77 0 0 1 5.182 15c0-5.972 4.847-10.818 10.819-10.818S26.818 9.028 26.818 15 21.972 24.818 16.001 24.818zm5.94-8.116c-.324-.163-1.921-.949-2.219-1.058-.298-.108-.516-.163-.733.163-.217.325-.842 1.058-1.033 1.276-.19.217-.38.244-.706.081-.324-.163-1.369-.505-2.607-1.61-.964-.86-1.615-1.921-1.805-2.246-.19-.325-.02-.5.143-.663.146-.145.325-.38.487-.57.163-.19.217-.325.325-.542.108-.217.054-.407-.027-.57-.081-.163-.733-1.766-1.005-2.417-.264-.634-.532-.548-.733-.558-.19-.009-.407-.011-.625-.011-.217 0-.57.081-.868.407-.298.325-1.14 1.114-1.14 2.717 0 1.603 1.167 3.152 1.33 3.37.163.217 2.297 3.506 5.565 4.918.777.335 1.384.535 1.857.685.78.248 1.489.213 2.05.129.625-.093 1.921-.786 2.192-1.544.271-.759.271-1.409.19-1.544-.081-.136-.298-.217-.622-.38z"/></svg>
+        </a>
+        <button class="hdr-icon-btn hdr-chat" id="chatFloatBtn" type="button" aria-label="Abrir asistente virtual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <i class="dot" aria-hidden="true"></i>
+        </button>
       </div>
     </header>
 
@@ -817,12 +897,42 @@
                 <option value="cat">Categoría</option>
               </select>
             </div>
+            <button class="multi-toggle" id="multiToggle" type="button" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Seleccionar varias
+            </button>
           </div>
 
           <div class="filters" id="filters" role="tablist" aria-label="Filtrar por categoría"></div>
+          <p class="multi-hint" id="multiHint">Toque las tarjetas que le interesan y envíe una sola solicitud con todas.</p>
+          <div class="sel-banner" id="selBanner">
+            <div class="sel-banner-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="sel-banner-txt">
+              <strong>1. Toque las certificaciones que desea</strong>
+              <span>2. Toque <b>"Solicitar seleccionadas"</b> (abajo, con la flecha) para enviarlas todas juntas de una vez.</span>
+            </div>
+            <div class="sel-banner-count" id="selBannerCount">0 seleccionadas</div>
+          </div>
           <div class="grid" id="grid"></div>
         </div>
       </section>
+
+      <!-- ============ BARRA DE SELECCIÓN MÚLTIPLE ============ -->
+      <div class="sel-bar" id="selBar">
+        <div class="sel-bar-in">
+          <span class="sel-bar-count"><b id="selCount">0</b> certificación(es) seleccionada(s)</span>
+          <div class="sel-bar-actions">
+            <button class="sel-bar-clear" id="selClear" type="button">Cancelar</button>
+            <div class="sel-arrow" aria-hidden="true">
+              <span>Toque aquí para enviar</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+            </div>
+            <button class="sel-bar-go" id="selGo" type="button" disabled>Solicitar seleccionadas</button>
+          </div>
+        </div>
+      </div>
 
       <section class="sec" id="faq" aria-label="Preguntas frecuentes">
         <div class="wrap">
@@ -935,18 +1045,7 @@
       </div>
     </footer>
 
-    <a class="wa-float" id="waFloat" href="https://wa.me/584169113621?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20las%20certificaciones%20FONDONORMA" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
-      <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.703 4.61 1.914 6.475L4 29l7.727-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818c-1.94 0-3.75-.55-5.29-1.503l-.379-.226-4.585 1.108 1.128-4.47-.248-.393A9.77 9.77 0 0 1 5.182 15c0-5.972 4.847-10.818 10.819-10.818S26.818 9.028 26.818 15 21.972 24.818 16.001 24.818zm5.94-8.116c-.324-.163-1.921-.949-2.219-1.058-.298-.108-.516-.163-.733.163-.217.325-.842 1.058-1.033 1.276-.19.217-.38.244-.706.081-.324-.163-1.369-.505-2.607-1.61-.964-.86-1.615-1.921-1.805-2.246-.19-.325-.02-.5.143-.663.146-.145.325-.38.487-.57.163-.19.217-.325.325-.542.108-.217.054-.407-.027-.57-.081-.163-.733-1.766-1.005-2.417-.264-.634-.532-.548-.733-.558-.19-.009-.407-.011-.625-.011-.217 0-.57.081-.868.407-.298.325-1.14 1.114-1.14 2.717 0 1.603 1.167 3.152 1.33 3.37.163.217 2.297 3.506 5.565 4.918.777.335 1.384.535 1.857.685.78.248 1.489.213 2.05.129.625-.093 1.921-.786 2.192-1.544.271-.759.271-1.409.19-1.544-.081-.136-.298-.217-.622-.38z"/></svg>
-      <span>Escríbenos por WhatsApp</span>
-    </a>
-
     <!-- ============ Asistente virtual (chatbot basado en el catálogo) ============ -->
-    <button class="chat-float" id="chatFloatBtn" type="button" aria-label="Abrir asistente virtual">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      <span>Asistente virtual</span>
-      <i class="dot" aria-hidden="true"></i>
-    </button>
-
     <div class="chat-panel" id="chatPanel" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
       <div class="chat-head">
         <div class="chat-head-ico">
@@ -1004,7 +1103,7 @@
   const WHATSAPP_NUMBER = "584169113621";
   /* Pegar aquí la URL de tu implementación de Google Apps Script (termina en /exec).
      Ver instrucciones completas en el archivo AppsScript_Code.gs que se entregó junto a este HTML. */
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEK7rk_AqJT30a-Oz-4rnheO7b5l_C18-C9KepcePrNlXKkLym6fJZFiOqK9I63cTK/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoYEcwVOc2721itSReC_SjfHPDUb4vxU_T3cvbvsK9kIfX-5SeHuYzIm5g4OD1t3tl/exec";
 
   /* ----------- Validación de correo ----------- */
   function isValidEmail(email){
@@ -1327,13 +1426,54 @@
     return payload;
   }
 
-  function sendRequestNow(scheme){
+  function buildMultiRequestPayload(schemes){
+    const rz = val("f_org"), rif = val("f_rif"), cont = val("f_cont"), cargo = val("f_cargo"),
+          tel = val("f_tel"), correo = val("f_correo"), ciudad = val("f_ciudad"),
+          sector = val("f_sector"), alcance = val("f_alcance"),
+          sitio = val("f_sitio"), pers = val("f_pers"), sub = val("f_sub");
+    const estadoEl = document.getElementById("f_estado");
+    const estado = estadoEl ? estadoEl.value : "implementado";
+    const ready = estado === "implementado";
+    const codes = schemes.map(s=>s.code).join(", ");
+    const names = schemes.map(s=>`${s.code} — ${s.name}`).join(" | ");
+
+    return {
+      _subject: `${ready ? "Solicitud de certificación (varias normas)" : "Lead de seguimiento (varias normas)"} — ${codes} · ${rz || "Nueva organización"}`,
+      _cc: MAIL_CC,
+      _template: "table",
+      _captcha: "false",
+      "Tipo de registro": ready ? "Solicitud formal de certificación (múltiple)" : "Lead de seguimiento (aún no listo, múltiple)",
+      "Certificaciones solicitadas": names,
+      "Nombre / razón social": rz,
+      "RIF": rif,
+      "Persona de contacto": cont,
+      "Cargo": cargo,
+      "Teléfono": tel,
+      "Correo electrónico": correo,
+      "Ciudad y estado": ciudad,
+      "Actividad económica / sector": sector,
+      "Alcance a certificar": alcance,
+      "Tipo de sitio": sitio,
+      "N.º de trabajadores en el alcance": pers,
+      "¿Procesos subcontratados?": sub,
+      "Estado de los sistemas de gestión": ESTADO_LABELS[estado] || estado,
+      "Declaración": ready
+        ? "El solicitante confirma tener implementados y en funcionamiento los sistemas de gestión de las normas seleccionadas."
+        : "El solicitante aún no tiene los sistemas implementados; solicita seguimiento y orientación de Comercialización."
+    };
+  }
+
+  function sendPayloadNow(payload){
     return fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(attachDiagContext(buildRequestPayload(scheme)))
+      body: JSON.stringify(payload)
     }).then(res => { if(!res.ok) throw new Error("send-failed"); return res.json(); })
       .then(data => { if(data && data.ok === false) throw new Error(data.error || "send-failed"); return data; });
+  }
+
+  function sendRequestNow(scheme){
+    return sendPayloadNow(attachDiagContext(buildRequestPayload(scheme)));
   }
 
   function buildGeneralMailto(){
@@ -1378,6 +1518,55 @@
     filtersEl.appendChild(b);
   });
 
+  /* ----------- Selección múltiple ----------- */
+  let selectMode = false;
+  const selectedIds = new Set();
+  const multiToggle = document.getElementById("multiToggle");
+  const selBar = document.getElementById("selBar");
+  const selCount = document.getElementById("selCount");
+  const selGo = document.getElementById("selGo");
+  const selClear = document.getElementById("selClear");
+
+  function updateSelBar(){
+    selCount.textContent = selectedIds.size;
+    selGo.disabled = selectedIds.size === 0;
+    const barShown = selectMode && selectedIds.size > 0;
+    selBar.classList.toggle("show", barShown);
+    selBar.classList.toggle("armed", barShown);
+    document.body.classList.toggle("sel-bar-open", barShown);
+    const bannerCount = document.getElementById("selBannerCount");
+    if(bannerCount){
+      bannerCount.textContent = selectedIds.size === 0
+        ? "Ninguna seleccionada"
+        : `${selectedIds.size} seleccionada${selectedIds.size===1?"":"s"}`;
+    }
+  }
+
+  function setSelectMode(on){
+    selectMode = on;
+    document.body.classList.toggle("selecting", on);
+    multiToggle.setAttribute("aria-pressed", on ? "true" : "false");
+    multiToggle.innerHTML = on
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Cancelar selección`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Seleccionar varias`;
+    if(!on){ selectedIds.clear(); }
+    updateSelBar();
+    renderGrid();
+  }
+
+  multiToggle.addEventListener("click", ()=> setSelectMode(!selectMode));
+  selClear.addEventListener("click", ()=> setSelectMode(false));
+  selGo.addEventListener("click", ()=>{
+    if(selectedIds.size===0) return;
+    openMultiModal(Array.from(selectedIds));
+  });
+
+  function toggleSelected(id, cardEl){
+    if(selectedIds.has(id)){ selectedIds.delete(id); cardEl.classList.remove("picked"); }
+    else { selectedIds.add(id); cardEl.classList.add("picked"); }
+    updateSelBar();
+  }
+
   /* ----------- Render de tarjetas ----------- */
   const grid = document.getElementById("grid");
   const searchEl = document.getElementById("search");
@@ -1410,7 +1599,9 @@
       card.style.setProperty("--accent", c.color);
       card.style.setProperty("--tint", c.tint);
       card.setAttribute("aria-label", `Ver detalles de ${s.name}`);
+      if(selectedIds.has(s.id)) card.classList.add("picked");
       card.innerHTML = `
+        <div class="card-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
         <div class="card-top">
           <span class="tag">${c.label}</span>
           ${s.logo ? `<span class="badge badge-logo" aria-hidden="true"><img src="${s.logo}" alt="" /></span>` : `<span class="badge" aria-hidden="true"><small>${s.badgeTop}</small>${s.badge}</span>`}
@@ -1418,10 +1609,13 @@
         <div class="card-code">${s.code}</div>
         <h4>${s.name}</h4>
         <p>${s.short}</p>
-        <span class="card-foot">Ver detalles y solicitar
+        <span class="card-foot">${selectMode ? "Toque para seleccionar" : "Ver detalles y solicitar"}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>`;
-      card.addEventListener("click", ()=>openModal(s.id));
+      card.addEventListener("click", ()=>{
+        if(selectMode) toggleSelected(s.id, card);
+        else openModal(s.id);
+      });
       grid.appendChild(card);
     });
   }
@@ -1482,12 +1676,14 @@
   const modal = document.getElementById("modal");
   const modalPanel = document.getElementById("modalPanel");
   let currentScheme = null;
+  let multiSchemes = null;
   let lastFocused = null;
 
   function openModal(id){
     const s = SCHEMES.find(x=>x.id===id);
     if(!s) return;
     currentScheme = s;
+    multiSchemes = null;
     const c = CATS[s.cat];
     lastFocused = document.activeElement;
 
@@ -1569,9 +1765,116 @@
     $("#mClose").focus();
   }
 
+  function renderMultiChips(){
+    const wrap = document.getElementById("mChips");
+    if(!wrap || !multiSchemes) return;
+    wrap.innerHTML = multiSchemes.map(s=>`
+      <span class="m-chip" data-id="${s.id}">${s.code}
+        <button type="button" aria-label="Quitar ${s.code}">✕</button>
+      </span>`).join("");
+    wrap.querySelectorAll(".m-chip button").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.parentElement.getAttribute("data-id");
+        multiSchemes = multiSchemes.filter(s=>s.id!==id);
+        selectedIds.delete(id);
+        updateSelBar();
+        if(multiSchemes.length===0){ closeModal(); return; }
+        renderMultiChips();
+        document.getElementById("mMultiCount").textContent = multiSchemes.length;
+      });
+    });
+  }
+
+  function openMultiModal(ids){
+    const list = SCHEMES.filter(s=>ids.includes(s.id));
+    if(list.length===0) return;
+    currentScheme = null;
+    multiSchemes = list;
+    lastFocused = document.activeElement;
+
+    document.querySelector(".m-foot").style.display = "";
+    const btnReset = document.getElementById("mRequest");
+    btnReset.disabled = false;
+    btnReset.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg> Enviar solicitud`;
+
+    modalPanel.style.setProperty("--accent", "var(--nav3)");
+    modalPanel.style.setProperty("--tint", "#e6f0f8");
+    $("#mBadge").innerHTML = `<small>VARIAS</small>${list.length}`;
+    $("#mBadge").classList.remove("badge-logo");
+    $("#mTag").textContent = "Solicitud combinada";
+    $("#mTitle").textContent = "Solicitar varias certificaciones";
+    $("#mCode").textContent = `${list.length} esquema(s) seleccionado(s)`;
+
+    $("#mBody").innerHTML = `
+      <div class="m-block">
+        <h5>Certificaciones que va a solicitar (<span id="mMultiCount">${list.length}</span>)</h5>
+        <p style="margin:0 0 10px;">Puede quitar alguna tocando la ✕. Se enviará <strong>una sola solicitud</strong> con todas las certificaciones que queden en la lista, en lugar de una por una.</p>
+        <div class="m-chips" id="mChips"></div>
+      </div>
+
+      <div class="m-form">
+        <p class="m-form-h">Datos de su organización</p>
+        <p class="m-form-sub">Complete los datos una sola vez. Al enviar, la solicitud con todas las certificaciones llega de inmediato a Comercialización de FONDONORMA.</p>
+        <div class="fgrid">
+          <div class="field full"><label for="f_org">Nombre / razón social <span class="req">*</span></label><input id="f_org" type="text" placeholder="Ej.: Mi Empresa, C.A." /></div>
+          <div class="field"><label for="f_rif">RIF</label><input id="f_rif" type="text" placeholder="J-000000000" /></div>
+          <div class="field"><label for="f_cont">Persona de contacto</label><input id="f_cont" type="text" placeholder="Nombre y apellido" /></div>
+          <div class="field"><label for="f_cargo">Cargo</label><input id="f_cargo" type="text" placeholder="Ej.: Gerente de Calidad" /></div>
+          <div class="field"><label for="f_tel">Teléfono</label><input id="f_tel" type="tel" placeholder="+58 ..." /></div>
+          <div class="field"><label for="f_correo">Correo electrónico</label><input id="f_correo" type="email" placeholder="contacto@empresa.com" /></div>
+          <div class="field"><label for="f_ciudad">Ciudad y estado</label><input id="f_ciudad" type="text" placeholder="Ej.: Caracas, Dtto. Capital" /></div>
+          <div class="field full"><label for="f_sector">Actividad económica / sector</label><input id="f_sector" type="text" placeholder="Ej.: Manufactura de alimentos" /></div>
+          <div class="field full"><label for="f_alcance">Alcance a certificar</label><textarea id="f_alcance" placeholder="Describa brevemente las actividades / procesos que desea certificar"></textarea></div>
+          <div class="field"><label for="f_sitio">Tipo de sitio</label><select id="f_sitio"><option>Monositio</option><option>Multisitio</option></select></div>
+          <div class="field"><label for="f_pers">N.º de trabajadores en el alcance</label><input id="f_pers" type="number" min="0" placeholder="Ej.: 45" /></div>
+          <div class="field"><label for="f_sub">¿Procesos subcontratados?</label><select id="f_sub"><option>No</option><option>Sí</option></select></div>
+          <div class="field full"><label for="f_estado">Estado de sus sistemas de gestión <span class="req">*</span></label>
+            <select id="f_estado">
+              <option value="implementado">Ya están implementados y funcionando</option>
+              <option value="proceso">Los estamos implementando</option>
+              <option value="no">Aún no hemos comenzado</option>
+            </select>
+          </div>
+        </div>
+        <div class="confirm" id="confirmBlock">
+          <input id="f_confirm" type="checkbox" />
+          <label for="f_confirm">Confirmo que mi organización tiene <strong>implementados y en funcionamiento</strong> los sistemas de gestión correspondientes a las normas seleccionadas.</label>
+        </div>
+        <div class="confirm" id="notReadyBlock" style="display:none;background:#eef4fa;border-color:var(--bd2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex:0 0 auto;margin-top:2px;color:var(--nav3)"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          <label style="cursor:default;">Como sus sistemas aún no están implementados, esto se registrará como <strong>solicitud de seguimiento</strong>: Comercialización le contactará para orientarlo, y podrá formalizar la certificación cuando esté listo.</label>
+        </div>
+        <p class="form-msg" id="formMsg">Complete el nombre de su organización y confirme el estado de sus sistemas.</p>
+      </div>`;
+
+    renderMultiChips();
+
+    const estadoSel = document.getElementById("f_estado");
+    const confirmBlock = document.getElementById("confirmBlock");
+    const notReadyBlock = document.getElementById("notReadyBlock");
+    function syncEstado(){
+      const ready = estadoSel.value === "implementado";
+      confirmBlock.style.display = ready ? "" : "none";
+      notReadyBlock.style.display = ready ? "none" : "";
+      const btn = document.getElementById("mRequest");
+      if(btn && !btn.disabled){
+        btn.innerHTML = ready
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg> Enviar solicitud`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg> Quiero que me contacten`;
+      }
+    }
+    estadoSel.addEventListener("change", syncEstado);
+    syncEstado();
+
+    modal.classList.add("open");
+    document.body.classList.add("locked");
+    $("#mClose").focus();
+  }
+
   function closeModal(){
     modal.classList.remove("open");
     currentScheme = null;
+    multiSchemes = null;
     if(!document.getElementById("gate").classList.contains("hide")) return;
     document.body.classList.remove("locked");
     if(lastFocused) lastFocused.focus();
@@ -1582,7 +1885,8 @@
   document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modal.classList.contains("open")) closeModal(); });
 
   $("#mRequest").addEventListener("click", ()=>{
-    if(!currentScheme) return;
+    const isMulti = Array.isArray(multiSchemes) && multiSchemes.length > 0;
+    if(!currentScheme && !isMulti) return;
     const org = val("f_org");
     const correo = val("f_correo");
     const estadoEl = document.getElementById("f_estado");
@@ -1594,7 +1898,7 @@
     if(!org || !confirmed || !emailOk){
       msg.textContent = !emailOk
         ? "El correo electrónico no parece válido. Revíselo e intente de nuevo."
-        : "Complete el nombre de su organización y confirme que su sistema está implementado.";
+        : "Complete el nombre de su organización y confirme el estado de su(s) sistema(s).";
       msg.classList.add("show");
       if(!org){ document.getElementById("f_org").focus(); }
       else if(!emailOk){ document.getElementById("f_correo").focus(); }
@@ -1608,13 +1912,19 @@
     btn.disabled = true;
     btn.innerHTML = `<span class="btn-spin"></span>${ready ? "Enviando solicitud…" : "Enviando registro…"}`;
 
-    sendRequestNow(currentScheme).then(()=>{
+    const sendPromise = isMulti
+      ? sendPayloadNow(attachDiagContext(buildMultiRequestPayload(multiSchemes)))
+      : sendRequestNow(currentScheme);
+
+    sendPromise.then(()=>{
       const body = document.getElementById("mBody");
-      const waText = encodeURIComponent(`Hola, acabo de enviar una solicitud para ${currentScheme.code} desde el catálogo web.`);
+      const codesForWa = isMulti ? multiSchemes.map(s=>s.code).join(", ") : currentScheme.code;
+      const waText = encodeURIComponent(`Hola, acabo de enviar una solicitud para ${codesForWa} desde el catálogo web.`);
       const title = ready ? "¡Solicitud enviada!" : "¡Registro enviado!";
+      const codeHtml = isMulti ? multiSchemes.map(s=>s.code).join(", ") : currentScheme.code;
       const desc = ready
-        ? `Su solicitud para <strong>${currentScheme.code}</strong> se envió de inmediato a Comercialización de FONDONORMA. En breve nos pondremos en contacto con usted.`
-        : `Registramos su interés en <strong>${currentScheme.code}</strong>. Como su sistema aún está en preparación, Comercialización le hará seguimiento y le orientará hasta que esté listo para certificarse.`;
+        ? `Su solicitud para <strong>${codeHtml}</strong> se envió de inmediato a Comercialización de FONDONORMA. En breve nos pondremos en contacto con usted.`
+        : `Registramos su interés en <strong>${codeHtml}</strong>. Como su(s) sistema(s) aún está(n) en preparación, Comercialización le hará seguimiento y le orientará hasta que esté(n) listo(s) para certificarse.`;
       body.innerHTML = `
         <div class="sent-ok">
           <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -1627,6 +1937,7 @@
         </div>`;
       document.querySelector(".m-foot").style.display = "none";
       modalPanel.scrollTop = 0;
+      if(isMulti){ setSelectMode(false); }
     }).catch(()=>{
       btn.disabled = false;
       btn.innerHTML = originalHTML;
